@@ -1,0 +1,12 @@
+server:
+    port: 8080
+    servlet:
+        context-path: /music
+spring:
+    datasource:
+      url: "jdbc:sqlserver://localhost;databaseName=music_db;user=sa;password=123;encrypt=true;trustServerCertificate=true"
+    jpa:
+        hibernate:
+            ddl-auto: update
+        show-sql: true
+
