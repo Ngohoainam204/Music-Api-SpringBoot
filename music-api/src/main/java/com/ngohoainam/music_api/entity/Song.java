@@ -18,8 +18,8 @@ public class Song {
     private Long id;
     @Column(nullable = false)
     private String title;
-    @Column(nullable = false)
 
+    @Column(nullable = false)
     private String url;
 
     @ManyToOne
@@ -29,7 +29,9 @@ public class Song {
     @ManyToOne
     @JoinColumn(name = "album_id", nullable = false)
     private Album album;
+    @Column(name = "duration")
     private int duration;
+    @Column(name = "lyric")
     private String lyric;
     @Column(name = "is_private", nullable = false)
     private boolean isPrivate;

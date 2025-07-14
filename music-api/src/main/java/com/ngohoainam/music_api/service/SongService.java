@@ -11,6 +11,7 @@ import com.ngohoainam.music_api.entity.Song;
 import com.ngohoainam.music_api.repository.AlbumRepository;
 import com.ngohoainam.music_api.repository.ArtistRepository;
 import com.ngohoainam.music_api.repository.SongRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,15 +19,16 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class SongService {
-    @Autowired
-    SongMapper songMapper;
-    @Autowired
-    public SongRepository songRepository;
-    @Autowired
-    public AlbumRepository albumRepository;
-    @Autowired
-    public ArtistRepository artistRepository;
+
+    private final SongMapper songMapper;
+
+    private final SongRepository songRepository;
+
+    private final AlbumRepository albumRepository;
+
+    private final ArtistRepository artistRepository;
 
     public Song createSong( SongCreateRequest request){
         Album album = albumRepository.findById(request.getAlbumId()).orElse(null);
@@ -47,14 +49,15 @@ public class SongService {
         return songRepository.findAll().stream().map(songMapper::toSongResponse).toList();
     }
     public Song getSongById(Long id){
-        return songRepository.findById(id).orElse(null);
+        return songRepository.findById(id).orElseThrow(()-> new RuntimeException("Song not found"));
     }
 
     public void deleteSongById(Long id){
+        songRepository.findById(id).orElseThrow(()->new RuntimeException("Song not found"));
         songRepository.deleteById(id);
     }
     public SongResponse updateSongById(Long id, SongUpdateRequest request) {
-        Song song = songRepository.findById(id).orElseThrow(RuntimeException::new);
+        Song song = songRepository.findById(id).orElseThrow(()->new RuntimeException("Song not found"));
         if (song == null) {
             return null;
         }

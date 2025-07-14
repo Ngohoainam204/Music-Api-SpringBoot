@@ -13,7 +13,7 @@ public class SongCreateRequest {
     String url;
     int duration;
     String lyric;
-    boolean isPrivate = false;
+    boolean isPrivate;
     Long albumId;
     Long artistId;
 
