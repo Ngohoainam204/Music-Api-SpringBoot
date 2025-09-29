@@ -2,11 +2,20 @@ server:
     port: 8080
     servlet:
         context-path: /music
+
 spring:
     datasource:
-      url: "jdbc:sqlserver://localhost;databaseName=music_db;user=sa;password=123;encrypt=true;trustServerCertificate=true"
+        url: jdbc:mysql://localhost:3306/music?useSSL=false&serverTimezone=Asia/Ho_Chi_Minh
+        username: root
+        password: namvip2004
+        driver-class-name: com.mysql.cj.jdbc.Driver
+
     jpa:
         hibernate:
             ddl-auto: update
         show-sql: true
-
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.MySQL8Dialect
+    jwt:
+      signerKey: "RBV8NU6OHv2wXAb5JFO6p4gRKAENB1SMsyoZ8Wum1WGHUwtuh9LrI9z3Q7AalnEX"

@@ -3,6 +3,10 @@ package com.ngohoainam.music_api.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
+
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,28 +16,41 @@ import lombok.experimental.FieldDefaults;
 )
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-
 public class Song {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(nullable = false)
-    private String title;
+    Long id;
 
-    @Column(nullable = false)
-    private String url;
+    @Column(name = "title", nullable = false)
+    String title;
 
     @ManyToOne
     @JoinColumn(name = "artist_id", nullable = false)
-    private Artist artist;
+    Artist artist;
 
     @ManyToOne
-    @JoinColumn(name = "album_id", nullable = false)
-    private Album album;
-    @Column(name = "duration")
-    private int duration;
-    @Column(name = "lyric")
-    private String lyric;
-    @Column(name = "is_private", nullable = false)
-    private boolean isPrivate;
+    @JoinColumn(name = "album_id")
+    Album album;
+
+    @Column(name = "duration_seconds")
+    int durationSeconds;
+
+    @Column(name = "explicit")
+    boolean explicit;
+
+    @Column(name = "is_published", nullable = false)
+    boolean isPublished;
+
+    @Column(name = "price_cents", nullable = false)
+    int priceCents;
+
+    @Column(name = "sku")
+    String sku;
+
+    @CreationTimestamp
+    @Column(name = "created_at")
+    LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    LocalDateTime updatedAt;
 
 }

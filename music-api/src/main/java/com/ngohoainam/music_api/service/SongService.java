@@ -12,7 +12,6 @@ import com.ngohoainam.music_api.repository.AlbumRepository;
 import com.ngohoainam.music_api.repository.ArtistRepository;
 import com.ngohoainam.music_api.repository.SongRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
@@ -31,17 +30,17 @@ public class SongService {
     private final ArtistRepository artistRepository;
 
     public Song createSong( SongCreateRequest request){
-        Album album = albumRepository.findById(request.getAlbumId()).orElse(null);
-        Artist artist = artistRepository.findById(request.getArtistId()).orElse(null);
+        Artist artist = artistRepository.findById(request.getArtistId()).orElseThrow(()->
+                new RuntimeException("Artist not found"));
 
         Song song = new Song();
         song.setTitle(request.getTitle());
-        song.setUrl(request.getUrl());
-        song.setDuration(request.getDuration());
-        song.setLyric(request.getLyric());
-        song.setAlbum(album);
+        song.setDurationSeconds(request.getDurationSeconds());
+        song.setExplicit(request.isExplicit());
+        song.setSku(request.getSku());
+        song.setPriceCents(request.getPriceCents());
+        song.setPublished(request.isPublished());
         song.setArtist(artist);
-        song.setPrivate(request.isPrivate());
         return songRepository.save(song);
     }
 

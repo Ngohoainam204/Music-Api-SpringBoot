@@ -3,17 +3,19 @@ package com.ngohoainam.music_api.dto.request.songRequest;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SongCreateRequest {
     String title;
-    String url;
-    int duration;
-    String lyric;
-    boolean isPrivate;
+    int durationSeconds;
+    boolean explicit;
+    int priceCents;
+    boolean isPublished;
+    String sku;
     Long albumId;
     Long artistId;
 

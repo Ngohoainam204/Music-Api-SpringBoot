@@ -15,9 +15,10 @@ import org.springframework.stereotype.Component;
 public interface SongMapper {
     Song toSong(SongCreateRequest request);
 
-    @Mapping(source = "id", target = "id")
-    @Mapping(target = "artistName", expression = "java(song.getArtist() != null ? song.getArtist().getName() : null)")
-    @Mapping(target = "albumTitle", expression = "java(song.getAlbum() != null ? song.getAlbum().getTitle() : null)")
+    @Mapping(source = "album.id", target = "albumId")
+    @Mapping(source = "artist.id", target = "artistId")
+    @Mapping(source = "durationSeconds", target = "durationSeconds")
+    @Mapping(source = "createdAt", target = "createdAt")
     SongResponse toSongResponse(Song song);
 
     void updateSong(@MappingTarget Song song, SongUpdateRequest request);

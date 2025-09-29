@@ -24,8 +24,7 @@ public class AlbumController {
     //
     @PostMapping
     public ApiResponse<AlbumResponse> createAlbum(@RequestBody @Valid AlbumCreateRequest request){
-     Album album = albumService.createAlbum(request);
-     AlbumResponse albumResponse = albumMapper.toResponse(album);
+     AlbumResponse albumResponse = albumService.createAlbum(request);
      return ApiResponse.<AlbumResponse>builder()
              .code(200)
              .result(albumResponse)

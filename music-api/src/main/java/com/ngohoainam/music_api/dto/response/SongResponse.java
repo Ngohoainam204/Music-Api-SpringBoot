@@ -4,6 +4,8 @@ package com.ngohoainam.music_api.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,10 +14,12 @@ import lombok.experimental.FieldDefaults;
 public class SongResponse {
     Long id;
     String title;
-    String url;
-    int duration;
-    String lyric;
-    String albumTitle;
-    String artistName;
-    boolean isPrivate;
+    int durationSeconds;
+    boolean explicit;
+    int priceCents;
+    boolean isPublished;
+    String sku;
+    LocalDateTime createdAt;
+    Long albumId;
+    Long artistId;
 }

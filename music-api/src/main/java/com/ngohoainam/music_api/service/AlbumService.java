@@ -29,14 +29,14 @@ public class AlbumService  {
 
     private final AlbumMapper albumMapper;
 
-    public Album createAlbum(AlbumCreateRequest request){
+    public AlbumResponse createAlbum(AlbumCreateRequest request){
         Artist artist = artistRepository.findById(request.getArtistId())
                 .orElseThrow(()->new RuntimeException("Artist not found"));
 
         Album newAlbum = new Album();
         newAlbum.setTitle(request.getTitle());
-        newAlbum.setDescription(request.getDescription());
-        newAlbum.setUrl(request.getUrl());
+        newAlbum.setReleaseDate(request.getReleaseDate());
+        newAlbum.setCoverImage(request.getCoverImage());
         newAlbum.setArtist(artist);
 
         if(request.getSongIds()!= null && !request.getSongIds().isEmpty()){
@@ -50,7 +50,7 @@ public class AlbumService  {
             newAlbum.setSongs(songs);
             }
 
-        return albumRepository.save(newAlbum);
+        return albumMapper.toResponse(albumRepository.save(newAlbum));
         }
         public List<AlbumResponse> getAllAlbums(){
         return albumRepository.findAll().stream()

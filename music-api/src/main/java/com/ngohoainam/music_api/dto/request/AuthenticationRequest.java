@@ -1,4 +1,4 @@
-package com.ngohoainam.music_api.dto.request.artistRequest;
+package com.ngohoainam.music_api.dto.request;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -10,8 +10,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ArtistUpdateRequest {
-    String name;
-    String url;
-    String bio;
+public class AuthenticationRequest {
+    String email;
+    String password;
 }

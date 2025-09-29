@@ -10,10 +10,11 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SongUpdateRequest {
     String title;
-    String url;
-    int duration;
-    String lyric;
-    boolean isPrivate = false;
+    int durationSeconds;
+    boolean explicit;
+    int priceCents;
+    boolean isPublished;
+    String sku;
     Long albumId;
     Long artistId;
 
