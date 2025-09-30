@@ -3,6 +3,10 @@ package com.ngohoainam.music_api.service;
 import com.ngohoainam.music_api.dto.request.AuthenticationRequest;
 import com.ngohoainam.music_api.dto.response.ApiResponse;
 import com.ngohoainam.music_api.dto.response.AuthenticationResponse;
+import com.ngohoainam.music_api.entity.Role;
+import com.ngohoainam.music_api.entity.User;
+import com.ngohoainam.music_api.enums.Permissions;
+import com.ngohoainam.music_api.enums.Roles;
 import com.ngohoainam.music_api.repository.UserRepository;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
@@ -21,6 +25,8 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -44,9 +50,7 @@ public class AuthenticationService {
         if(!authenticated)
             throw new RuntimeException("Authentication failed");
 
-        var token = generateToken(request.getEmail());
-
-        new AuthenticationResponse();
+        var token = generateToken(user);
 
         return AuthenticationResponse.builder()
                 .accessToken(token)
@@ -54,15 +58,18 @@ public class AuthenticationService {
                 .build();
     }
 
-    public String generateToken(String username) throws KeyLengthException {
+    public String generateToken(User user) throws KeyLengthException {
+        Roles roles = Roles.valueOf(user.getRoles().toString());
+        Set<Permissions> permissions = roles.getPermissions();
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS256);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(username)
-                .issuer("namsalt8.com")
+                .subject(user.getEmail())
+                .issuer("namsalt8@gmail.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()))
-                .claim("role", "USER")
+                .claim("roles",List.of(roles.name()))
+                .claim("permissions",permissions.stream().map(Permissions::name).toList())
                 .build();
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
         JWSObject jwsObject = new JWSObject(jwsHeader, payload);

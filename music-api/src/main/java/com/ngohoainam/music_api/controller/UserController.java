@@ -21,7 +21,7 @@ public class UserController {
         return ApiResponse.<UserResponse>builder()
                 .code(200)
                 .message("Create Successful")
-                .result(userService.createUser(request))
+                .result(userService.registerUser(request))
                 .build();
     }
     @GetMapping

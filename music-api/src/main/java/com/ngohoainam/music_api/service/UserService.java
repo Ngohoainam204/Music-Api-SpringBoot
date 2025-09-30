@@ -4,6 +4,7 @@ import com.ngohoainam.music_api.Mapper.UserMapper;
 import com.ngohoainam.music_api.dto.request.userRequest.UserCreateRequest;
 import com.ngohoainam.music_api.dto.response.UserResponse;
 import com.ngohoainam.music_api.entity.User;
+import com.ngohoainam.music_api.enums.Roles;
 import com.ngohoainam.music_api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,10 +20,11 @@ public class UserService {
 
     private final UserMapper userMapper;
 
-    public UserResponse createUser(UserCreateRequest request){
+    public UserResponse registerUser(UserCreateRequest request){
         if(userRepository.existsUserByEmail(request.getEmail()))
-            throw new RuntimeException("Username already exists");
+            throw new RuntimeException("Email already exists");
         User user = userMapper.toUser(request);
+        user.setRoles(Roles.USER);
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));

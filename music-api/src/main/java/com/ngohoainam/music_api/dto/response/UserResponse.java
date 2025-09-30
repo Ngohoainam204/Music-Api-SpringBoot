@@ -1,6 +1,7 @@
 package com.ngohoainam.music_api.dto.response;
 
 import com.ngohoainam.music_api.entity.Role;
+import com.ngohoainam.music_api.enums.Roles;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
@@ -20,5 +21,5 @@ public class UserResponse {
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
     String status;
-    Set<Role> roles;
+    Roles roles;
 }

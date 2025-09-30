@@ -1,6 +1,7 @@
 package com.ngohoainam.music_api.dto.request.userRequest;
 
 import com.ngohoainam.music_api.entity.Role;
+import com.ngohoainam.music_api.enums.Roles;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -13,11 +14,7 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserCreateRequest {
      String email;
-     boolean emailVerified;
      String password;
      String displayName;
-     LocalDateTime createdAt;
-     LocalDateTime updatedAt;
-     String status;
-     Set<Role> roles;
+     String status = "ACTIVE";
 }

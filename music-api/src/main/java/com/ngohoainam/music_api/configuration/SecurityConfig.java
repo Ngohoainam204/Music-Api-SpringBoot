@@ -25,9 +25,8 @@ public class SecurityConfig {
     protected String SIGNER_KEY;
 
     private static final String[] PUBLIC_ENDPOINTS ={
-            "/songs",
-            "/auth/login"
-
+            "/auth/login",
+            "/auth/register",
     };
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
