@@ -14,6 +14,7 @@ import java.util.Set;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserResponse {
+    Long id;
     String email;
     Boolean emailVerified;
     String passwordHash;

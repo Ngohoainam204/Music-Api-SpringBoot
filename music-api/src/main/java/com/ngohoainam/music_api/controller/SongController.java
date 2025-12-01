@@ -9,6 +9,7 @@ import com.ngohoainam.music_api.entity.Song;
 import com.ngohoainam.music_api.service.SongService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class SongController {
     @Autowired
     private SongMapper songMapper;
 
+    @PreAuthorize("hasRole('ARTIST')")
     @PostMapping
     public ApiResponse<SongResponse> createSong(@RequestBody @Valid SongCreateRequest request){
         Song song = songService.createSong(request);
@@ -32,10 +34,12 @@ public class SongController {
                 .message("Create Successful")
                 .build();
     }
+    @PreAuthorize("hasRole('USER')")
     @GetMapping
     public List<SongResponse> getSongs(){
         return songService.getAllSongs();
     }
+
     @GetMapping("/{id}")
     public ApiResponse<SongResponse> getSongById(@PathVariable("id") Long id){
         Song song = songService.getSongById(id);

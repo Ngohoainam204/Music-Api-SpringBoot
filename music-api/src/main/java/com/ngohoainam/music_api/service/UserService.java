@@ -20,13 +20,14 @@ public class UserService {
 
     private final UserMapper userMapper;
 
+    private final PasswordEncoder passwordEncoder;
+
     public UserResponse registerUser(UserCreateRequest request){
         if(userRepository.existsUserByEmail(request.getEmail()))
             throw new RuntimeException("Email already exists");
         User user = userMapper.toUser(request);
         user.setRoles(Roles.USER);
-
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        ;
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
 
 

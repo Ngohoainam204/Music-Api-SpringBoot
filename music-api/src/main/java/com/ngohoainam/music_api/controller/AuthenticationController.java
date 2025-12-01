@@ -35,7 +35,7 @@ public class AuthenticationController {
     private final UserMapper userMapper;
     @PostMapping("/login")
 
-    ResponseEntity<ApiResponse<AuthenticationResponse>> authenticateUser(@RequestBody AuthenticationRequest request) throws KeyLengthException {
+    ResponseEntity<ApiResponse<AuthenticationResponse>> login(@RequestBody AuthenticationRequest request) throws KeyLengthException {
         AuthenticationResponse authenticationResponse = authenticationService.authenticated(request);
 
         ApiResponse<AuthenticationResponse> apiResponse = ApiResponse.<AuthenticationResponse>builder()
@@ -46,7 +46,7 @@ public class AuthenticationController {
          return ResponseEntity.ok(apiResponse);
     }
     @PostMapping("/register")
-    ResponseEntity<ApiResponse<UserResponse>> registerUser(@RequestBody UserCreateRequest request) throws KeyLengthException {
+    ResponseEntity<ApiResponse<UserResponse>> register(@RequestBody UserCreateRequest request) throws KeyLengthException {
             ApiResponse<UserResponse> apiResponse = ApiResponse.<UserResponse>builder()
                     .code(200)
                     .message("Register successful")
