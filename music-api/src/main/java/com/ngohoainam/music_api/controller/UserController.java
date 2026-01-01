@@ -1,10 +1,11 @@
 package com.ngohoainam.music_api.controller;
 
 import com.ngohoainam.music_api.dto.request.userRequest.UserCreateRequest;
-import com.ngohoainam.music_api.dto.response.ApiResponse;
+import com.ngohoainam.music_api.dto.ApiResponse;
 import com.ngohoainam.music_api.dto.response.UserResponse;
 import com.ngohoainam.music_api.entity.User;
 import com.ngohoainam.music_api.enums.Roles;
+import com.ngohoainam.music_api.exception.ErrorCode;
 import com.ngohoainam.music_api.repository.UserRepository;
 import com.ngohoainam.music_api.service.UserService;
 import jakarta.validation.Valid;
@@ -19,47 +20,32 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final UserRepository userRepository;
     @PostMapping
     public ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreateRequest request){
 
-        return ApiResponse.<UserResponse>builder()
-                .code(200)
-                .message("Create Successful")
-                .result(userService.registerUser(request))
-                .build();
+        return ApiResponse.created(userService.registerUser(request));
     }
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public List<UserResponse> getAllUsers(){
-        return userService.getAllUsers();
+    public ApiResponse<List<UserResponse>> getAllUsers(){
+        return ApiResponse.success(userService.getAllUsers());
     }
+
     @GetMapping("/{id}")
     public ApiResponse<UserResponse> getUserById(@PathVariable("id") Long id){
-        return ApiResponse.<UserResponse>builder()
-                .code(200)
-                .result(userService.getUserById(id))
-                .build();
+        return ApiResponse.success(userService.getUserById(id));
     }
     @DeleteMapping("/{id}")
-    public ApiResponse<UserResponse> deleteUserById(@PathVariable("id") Long id){
+    public ApiResponse<String> deleteUserById(@PathVariable("id") Long id){
         userService.deleteUserById(id);
-        return ApiResponse.<UserResponse>builder()
-                .code(200)
-                .message("Delete Successful")
-                .build();
+        return ApiResponse.success(ErrorCode.DELETE_SUCCESS.getMessage());
     }
     @PostMapping("{id}/upgrade-to-artist")
     @PreAuthorize("hasRole('ADMIN')")
-    public ApiResponse<UserResponse> upgradeUserToArtist(@PathVariable("id") Long id){
-        User user = userRepository.findById(id).orElseThrow(()->new RuntimeException(
-                "User not found"
-        ));
-        user.setRoles(Roles.ARTIST);
-        userRepository.save(user);
-        return ApiResponse.<UserResponse>builder()
-                .code(200)
-                .message("Upgrade successful")
-                .build();
+    public ApiResponse<String> upgradeUserToArtist(@PathVariable("id") Long id){
+        userService.updateUserById(id);
+        return ApiResponse.success(ErrorCode.SUCCESS.getMessage());
     }
+
+
 }

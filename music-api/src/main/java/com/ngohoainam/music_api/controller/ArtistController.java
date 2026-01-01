@@ -1,11 +1,10 @@
 package com.ngohoainam.music_api.controller;
 
-import com.ngohoainam.music_api.Mapper.ArtistMapper;
 import com.ngohoainam.music_api.dto.request.artistRequest.ArtistCreateRequest;
 import com.ngohoainam.music_api.dto.request.artistRequest.ArtistUpdateRequest;
-import com.ngohoainam.music_api.dto.response.ApiResponse;
+import com.ngohoainam.music_api.dto.ApiResponse;
 import com.ngohoainam.music_api.dto.response.ArtistResponse;
-import com.ngohoainam.music_api.entity.Artist;
+import com.ngohoainam.music_api.exception.ErrorCode;
 import com.ngohoainam.music_api.service.ArtistService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,12 +20,8 @@ public class ArtistController {
 
     @PostMapping
     public ApiResponse<ArtistResponse> createArtist(@Valid @RequestBody ArtistCreateRequest request) {
-        ArtistResponse artistResponse = artistService.createArtist(request);
-        return ApiResponse.<ArtistResponse>builder()
-                .code(200)
-                .message("Create Successful")
-                .result(artistResponse)
-                .build();
+
+        return ApiResponse.success(artistService.createArtist(request));
     }
 
     @GetMapping()
@@ -36,36 +31,17 @@ public class ArtistController {
 
     @GetMapping("/{id}")
     public ApiResponse<ArtistResponse> getArtistById(@PathVariable("id") Long id) {
-        ArtistResponse artistResponse = artistService.getArtistById(id);
-        if (artistResponse == null) {
-            return ApiResponse.<ArtistResponse>builder()
-                    .code(404)
-                    .message("Artist not found")
-                    .build();
-        } else return
-                ApiResponse.<ArtistResponse>builder()
-                        .code(200)
-                        .result(artistResponse)
-                        .message("Find Successful")
-                        .build();
+        return ApiResponse.success(artistService.getArtistById(id));
     }
 
     @PutMapping( "/{id}")
     public ApiResponse<ArtistResponse> updateArtistById(@RequestBody ArtistUpdateRequest request, @PathVariable("id") Long id) {
         ArtistResponse artistResponse = artistService.updateArtistById(request,id);
-        return ApiResponse.<ArtistResponse>builder()
-                .code(200)
-                .result(artistResponse)
-                .message("Update successful")
-                .build();
+        return ApiResponse.success(artistResponse);
     }
     @DeleteMapping("/{id}")
-    public ApiResponse<ArtistResponse> deleteArtistById(@PathVariable("id") Long id) {
-        ArtistResponse artistResponse = artistService.deleteArtistById(id);
-        return ApiResponse.<ArtistResponse>builder()
-                .code(200)
-                .message("Delete successful")
-                .result(artistResponse)
-                .build();
+    public ApiResponse<String> deleteArtistById(@PathVariable("id") Long id) {
+        artistService.deleteArtistById(id);
+        return ApiResponse.success(ErrorCode.DELETE_SUCCESS.getMessage());
     }
 }
