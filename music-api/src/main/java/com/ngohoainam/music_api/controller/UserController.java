@@ -29,6 +29,7 @@ public class UserController {
                 .result(userService.registerUser(request))
                 .build();
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public List<UserResponse> getAllUsers(){
         return userService.getAllUsers();

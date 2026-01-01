@@ -1,9 +1,7 @@
 package com.ngohoainam.music_api.service;
 
 import com.ngohoainam.music_api.dto.request.AuthenticationRequest;
-import com.ngohoainam.music_api.dto.response.ApiResponse;
 import com.ngohoainam.music_api.dto.response.AuthenticationResponse;
-import com.ngohoainam.music_api.entity.Role;
 import com.ngohoainam.music_api.entity.User;
 import com.ngohoainam.music_api.enums.Permissions;
 import com.ngohoainam.music_api.enums.Roles;
@@ -15,9 +13,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

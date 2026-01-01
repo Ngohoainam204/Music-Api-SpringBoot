@@ -23,7 +23,9 @@ public class SongController {
     @Autowired
     private SongMapper songMapper;
 
-    @PreAuthorize("hasRole('ARTIST')")
+    private final SongMapper songMapper;
+
+    @PreAuthorize("hasRole('ARTIST'/'USER')")
     @PostMapping
     public ApiResponse<SongResponse> createSong(@RequestBody @Valid SongCreateRequest request){
         Song song = songService.createSong(request);
@@ -40,6 +42,7 @@ public class SongController {
         return songService.getAllSongs();
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/{id}")
     public ApiResponse<SongResponse> getSongById(@PathVariable("id") Long id){
         Song song = songService.getSongById(id);
@@ -55,6 +58,8 @@ public class SongController {
                 .message("Find Successful")
                 .build();
     }
+
+    @PreAuthorize("hasRole('USER')")
     @PutMapping("/{id}")
     public ApiResponse<SongResponse> updateSongById(@PathVariable("id") Long id,@RequestBody SongUpdateRequest request){
         SongResponse songResponse = songService.updateSongById(id,request);
@@ -73,6 +78,7 @@ public class SongController {
         }
     }
 
+    @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/{id}")
     public ApiResponse<SongResponse> deleteSongById(@PathVariable("id") Long id){
         songService.deleteSongById(id);

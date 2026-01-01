@@ -8,10 +8,13 @@ import com.ngohoainam.music_api.dto.response.SongResponse;
 import com.ngohoainam.music_api.entity.Album;
 import com.ngohoainam.music_api.entity.Artist;
 import com.ngohoainam.music_api.entity.Song;
+import com.ngohoainam.music_api.entity.User;
 import com.ngohoainam.music_api.repository.AlbumRepository;
 import com.ngohoainam.music_api.repository.ArtistRepository;
 import com.ngohoainam.music_api.repository.SongRepository;
+import com.ngohoainam.music_api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 
@@ -29,6 +32,7 @@ public class SongService {
 
     private final ArtistRepository artistRepository;
 
+    private final UserRepository userRepository;
     public Song createSong( SongCreateRequest request){
         Artist artist = artistRepository.findById(request.getArtistId()).orElseThrow(()->
                 new RuntimeException("Artist not found"));

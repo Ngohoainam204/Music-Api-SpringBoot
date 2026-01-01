@@ -17,7 +17,7 @@ public class UserResponse {
     Long id;
     String email;
     Boolean emailVerified;
-    String passwordHash;
+//    String passwordHash;
     String displayName;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
