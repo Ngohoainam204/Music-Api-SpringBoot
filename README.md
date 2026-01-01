@@ -7,7 +7,7 @@ A simple RESTful Music API built with Spring Boot.
 - ✅ Manage Songs, Artists, Albums
 - ✅ CRUD operations
 - ✅ DTO + Mapper (MapStruct)
-- ✅ H2/SQLServer Database
+- ✅ H2/MySQL Database
 - ✅ REST API with JSON
 
 ## Technologies
