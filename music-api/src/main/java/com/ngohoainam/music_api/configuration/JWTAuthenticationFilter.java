@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +44,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             JWSObject jwsObject = JWSObject.parse(token);
-            boolean verified = jwsObject.verify(new MACVerifier(signerKey.getBytes()));
+            boolean verified = jwsObject.verify(new MACVerifier(signerKey.getBytes(StandardCharsets.UTF_8)));
 
             if (!verified) {
                 log.warn("Token is not verified");
@@ -58,15 +59,17 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
             List<SimpleGrantedAuthority> authorities = new ArrayList<>();
             if (roles != null)
-                roles.forEach(role -> authorities.add(new SimpleGrantedAuthority("ROLE_" + role)));
+                roles.forEach(role -> {
+                    authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
+                });
             if (permissions != null)
                 permissions.forEach(permission -> authorities.add(new SimpleGrantedAuthority(permission)));
 
             UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(email, null, authorities);
-            SecurityContextHolder.getContext().setAuthentication(auth);
-
             log.info("✅ Authenticated user: {} with authorities: {}", email, authorities);
+
+            SecurityContextHolder.getContext().setAuthentication(auth);
 
         } catch (ParseException | JOSEException e) {
             throw new RuntimeException(e);

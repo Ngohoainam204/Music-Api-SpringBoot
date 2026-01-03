@@ -27,7 +27,7 @@ public class GlobalExceptionHandle {
     }
     @ExceptionHandler (value = AccessDeniedException.class)
     public ResponseEntity<ApiResponse<Void>> handlingAccessDeniedException(AccessDeniedException e){
-        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
+        ErrorCode errorCode = ErrorCode.FORBIDDEN;
         return ResponseEntity
                 .status(errorCode.getStatusCode())
                 .body(ApiResponse.<Void>builder()

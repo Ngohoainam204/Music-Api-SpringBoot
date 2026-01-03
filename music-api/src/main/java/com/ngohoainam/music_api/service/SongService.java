@@ -5,47 +5,75 @@ import com.ngohoainam.music_api.dto.request.songRequest.SongCreateRequest;
 import com.ngohoainam.music_api.dto.request.songRequest.SongUpdateRequest;
 
 import com.ngohoainam.music_api.dto.response.SongResponse;
-import com.ngohoainam.music_api.entity.Album;
-import com.ngohoainam.music_api.entity.Artist;
-import com.ngohoainam.music_api.entity.Song;
-import com.ngohoainam.music_api.entity.User;
+import com.ngohoainam.music_api.entity.*;
 import com.ngohoainam.music_api.exception.AppException;
 import com.ngohoainam.music_api.exception.ErrorCode;
-import com.ngohoainam.music_api.repository.AlbumRepository;
 import com.ngohoainam.music_api.repository.ArtistRepository;
+import com.ngohoainam.music_api.repository.SongFileRepository;
 import com.ngohoainam.music_api.repository.SongRepository;
 import com.ngohoainam.music_api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class SongService {
 
     private final SongMapper songMapper;
-
     private final SongRepository songRepository;
-
     private final ArtistRepository artistRepository;
-
     private final UserRepository userRepository;
-    public Song createSong( SongCreateRequest request){
-        Artist artist = artistRepository.findById(request.getArtistId()).orElseThrow(()->
-                new AppException(ErrorCode.ARTIST_NOT_FOUND));
+    private final SongFileRepository songFileRepository;
+    private final CloudinaryService cloudinaryService;
+    public Song createSong( SongCreateRequest request, MultipartFile file) throws IOException {
+        //Upload
+        Map uploadResult = cloudinaryService.uploadFile(file);
 
+        //Info
+        String fileUrl = uploadResult.get("secure_url").toString();
+        String format = uploadResult.get("format").toString();
+        Long size = Long.parseLong(uploadResult.get("bytes").toString());
+
+        //
+        Double durationDouble =(Double) uploadResult.get("duration");
+        Integer durationSeconds  = durationDouble.intValue();
+        //
+        Object bitRateObj = uploadResult.get("bit_rate");
+        int  bitrateKbps = 0;
+        if (bitRateObj != null) {
+            bitrateKbps = Integer.parseInt(bitRateObj.toString()) / 1000;
+        }
+        //
         Song song = new Song();
         song.setTitle(request.getTitle());
-        song.setDurationSeconds(request.getDurationSeconds());
+        song.setArtist(artistRepository.findById(request.getArtistId()).orElseThrow(()->new AppException(ErrorCode.ARTIST_NOT_FOUND)));
+        song.setDescription(request.getDescription());
+        song.setDurationSeconds(durationSeconds);
+        //
         song.setExplicit(request.isExplicit());
         song.setSku(request.getSku());
-        song.setPriceCents(request.getPriceCents());
         song.setPublished(request.isPublished());
-        song.setArtist(artist);
-        return songRepository.save(song);
+
+        Song savedSong = songRepository.save(song);
+
+        SongFile songFile = SongFile.builder()
+                .song(savedSong)
+                .storagePath(fileUrl)
+                .storageProvider("cloudinary")
+                .format(format)
+                .filesizeBytes(size)
+                .bitrateKbps(bitrateKbps)
+                .build();
+        songFileRepository.save(songFile);
+
+        return savedSong;
     }
 
     public List<SongResponse> getAllSongs(){
@@ -65,7 +93,7 @@ public class SongService {
 
         boolean isOwner = song.getArtist().getId().equals(currentUser.getId());
         boolean isAdmin = currentUser.getRoles().name().equals("ADMIN");
-        if(!isAdmin || !isOwner) throw new AppException(ErrorCode.FORBIDDEN);
+        if(!isAdmin && !isOwner) throw new AppException(ErrorCode.FORBIDDEN);
         songRepository.deleteById(id);
     }
     public SongResponse updateSongById(Long id, SongUpdateRequest request) {

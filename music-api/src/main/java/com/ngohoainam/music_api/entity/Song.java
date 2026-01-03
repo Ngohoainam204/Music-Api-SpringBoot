@@ -4,8 +4,13 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Getter @Setter
 @AllArgsConstructor
@@ -34,23 +39,31 @@ public class Song {
     @Column(name = "duration_seconds")
     int durationSeconds;
 
+    @Column(name = "description")
+    String description;
+
     @Column(name = "explicit")
-    boolean explicit;
+    boolean explicit = false;
 
     @Column(name = "is_published", nullable = false)
-    boolean isPublished;
+    boolean isPublished ;
 
     @Column(name = "price_cents", nullable = false)
-    int priceCents;
+    Integer priceCents ;
 
     @Column(name = "sku")
     String sku;
+
+
 
     @CreationTimestamp
     @Column(name = "created_at")
     LocalDateTime createdAt;
 
+    @LastModifiedDate
     @Column(name = "updated_at")
     LocalDateTime updatedAt;
 
+    @OneToMany(mappedBy = "song",cascade = CascadeType.ALL)
+    private List<SongFile> songFiles;
 }

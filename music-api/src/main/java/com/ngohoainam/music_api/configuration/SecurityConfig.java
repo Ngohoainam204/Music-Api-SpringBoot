@@ -1,5 +1,6 @@
 package com.ngohoainam.music_api.configuration;
 
+import com.cloudinary.Cloudinary;
 import com.ngohoainam.music_api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.NonFinal;
@@ -22,6 +23,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
@@ -38,6 +41,7 @@ public class SecurityConfig {
     private static final String[] PUBLIC_ENDPOINTS ={
             "/auth/login",
             "/auth/register",
+            "/error"
     };
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -47,19 +51,13 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)         ;
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }
 
     @Bean
-    public JwtDecoder jwtDecoder(){
-        SecretKey secretKey = new SecretKeySpec(SIGNER_KEY.getBytes(StandardCharsets.UTF_8),"HS512");
-        return NimbusJwtDecoder.withSecretKey(secretKey)
-                .macAlgorithm(MacAlgorithm.HS256)
-                .build();
-    }
-    @Bean
     PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder(10);
     }
+
 }

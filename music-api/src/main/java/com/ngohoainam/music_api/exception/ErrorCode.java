@@ -22,6 +22,7 @@ public enum ErrorCode {
     ALBUM_NOT_FOUND("MSC-2001","Album not found",HttpStatus.NOT_FOUND),
     PLAYLIST_NOT_FOUND("MSC-2002","Playlist not found",HttpStatus.NOT_FOUND),
     ARTIST_NOT_FOUND("MSC-2003","Artist not found",HttpStatus.NOT_FOUND),
+    FILE_NOT_FOUND("MSC-2004","File not found",HttpStatus.NOT_FOUND),
 
     ;
     ErrorCode(String code, String message, HttpStatusCode statusCode) {

@@ -6,18 +6,16 @@ import lombok.experimental.FieldDefaults;
 import java.time.LocalDateTime;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class SongCreateRequest {
-    String title;
-    int durationSeconds;
-    boolean explicit;
-    int priceCents;
-    boolean isPublished;
-    String sku;
-    Long albumId;
-    Long artistId;
+    private String title;
+    private int durationSeconds;
+    private boolean explicit = false;
+    private boolean isPublished;
+    private int priceCents ;
+    private String description;
+    private String sku;
+    private Long albumId;
+    private Long artistId;
 
 }
 
