@@ -1,0 +1,17 @@
+package com.ngohoainam.music_api.dto.request.artistRequest;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class ArtistUpdateRequest {
+    String name;
+    String url;
+    String bio;
+}

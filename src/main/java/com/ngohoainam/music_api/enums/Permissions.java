@@ -1,0 +1,38 @@
+package com.ngohoainam.music_api.enums;
+
+public enum Permissions {
+    //USER
+    SONG_READ,
+    PLAYLIST_READ,
+    PLAYLIST_CREATE,
+    PLAYLIST_UPDATE,
+    PLAYLIST_DELETE,
+    FAVOURITE_READ,
+    FAVOURITE_CREATE,
+    FAVOURITE_UPDATE,
+
+    //ARTIST
+    SONG_CREATE,
+    SONG_UPDATE,
+    SONG_DELETE,
+    ALBUM_CREATE,
+    ALBUM_UPDATE,
+    ALBUM_DELETE,
+    PRICE_SET,
+
+    //ADMIN
+    USER_READ,
+    USER_MANAGE,
+    ARTIST_MANAGE,
+    SONG_MANAGE,
+    PLAYLIST_MANAGE,
+    FAVOURITE_MANAGE,
+    ROLE_MANAGE,
+
+
+
+
+
+
+
+}
