@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -48,8 +49,8 @@ public class Song {
     @Column(name = "is_published", nullable = false)
     boolean isPublished ;
 
-    @Column(name = "price_cents", nullable = false)
-    Integer priceCents ;
+    @Column(name = "price_cents")
+    BigDecimal priceCents ;
 
     @Column(name = "sku")
     String sku;

@@ -23,7 +23,8 @@ public enum ErrorCode {
     PLAYLIST_NOT_FOUND("MSC-2002","Playlist not found",HttpStatus.NOT_FOUND),
     ARTIST_NOT_FOUND("MSC-2003","Artist not found",HttpStatus.NOT_FOUND),
     FILE_NOT_FOUND("MSC-2004","File not found",HttpStatus.NOT_FOUND),
-
+    //
+    INVALID_REQUEST("MSC-3000","Invalid request",HttpStatus.BAD_REQUEST),
     ;
     ErrorCode(String code, String message, HttpStatusCode statusCode) {
         this.code = code;

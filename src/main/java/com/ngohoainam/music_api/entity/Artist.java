@@ -26,7 +26,7 @@ public class Artist {
     @Column(nullable = false, unique = true)
     String url;
 
-    @Column(nullable = false)
+    @Column(name = "bio")
     String bio;
 
     @CreationTimestamp
@@ -37,4 +37,8 @@ public class Artist {
 
     @OneToMany(mappedBy = "artist",cascade = CascadeType.ALL)
      Set<Album> albums = new HashSet<>();
+
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id",unique = true)
+    User user;
 }

@@ -1,6 +1,8 @@
 package com.ngohoainam.music_api.controller;
 
 import com.ngohoainam.music_api.Mapper.SongMapper;
+import com.ngohoainam.music_api.annotation.IsSongOwner;
+import com.ngohoainam.music_api.dto.request.songRequest.SetPriceSongRequest;
 import com.ngohoainam.music_api.dto.request.songRequest.SongCreateRequest;
 import com.ngohoainam.music_api.dto.request.songRequest.SongUpdateRequest;
 import com.ngohoainam.music_api.dto.ApiResponse;
@@ -63,4 +65,12 @@ public class SongController {
         songService.deleteSongById(id);
         return ApiResponse.success("Song Delete Successfully");
     }
+
+    @PatchMapping("/{id}/price")
+    @PreAuthorize("hasRole('ARTIST') and @checkOwnerConfig.isSongOwner(authentication,#id)")
+    public ApiResponse<SongResponse> updateSongPriceById(@PathVariable("id") Long id, @RequestBody@Valid SetPriceSongRequest request) {
+        return ApiResponse.success(songService.setPriceSongById(id,request));
+    }
+
 }
+

@@ -1,6 +1,7 @@
 package com.ngohoainam.music_api.service;
 
 import com.ngohoainam.music_api.Mapper.SongMapper;
+import com.ngohoainam.music_api.dto.request.songRequest.SetPriceSongRequest;
 import com.ngohoainam.music_api.dto.request.songRequest.SongCreateRequest;
 import com.ngohoainam.music_api.dto.request.songRequest.SongUpdateRequest;
 
@@ -13,6 +14,7 @@ import com.ngohoainam.music_api.repository.SongFileRepository;
 import com.ngohoainam.music_api.repository.SongRepository;
 import com.ngohoainam.music_api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SongService {
@@ -32,8 +34,25 @@ public class SongService {
     private final UserRepository userRepository;
     private final SongFileRepository songFileRepository;
     private final CloudinaryService cloudinaryService;
+    private final AuthenticationService authenticationService;
+
     public Song createSong( SongCreateRequest request, MultipartFile file) throws IOException {
         //Upload
+        User user = authenticationService.getCurrentUser();
+
+        Artist artist = user.getArtist();
+        log.info("displayname" + user.getDisplayName());
+        if(artist == null) {
+                // Chưa có thì tạo mới ngay lập tức
+                artist = new Artist();
+                artist.setUser(user);
+                artist.setName(user.getDisplayName());
+                artist.setBio("New artist");
+                artist.setUser(user);
+                log.info("displayname" + artist.getName());
+                artist = artistRepository.save(artist);
+        }
+
         Map uploadResult = cloudinaryService.uploadFile(file);
 
         //Info
@@ -43,7 +62,7 @@ public class SongService {
 
         //
         Double durationDouble =(Double) uploadResult.get("duration");
-        Integer durationSeconds  = durationDouble.intValue();
+        int durationSeconds  = durationDouble.intValue();
         //
         Object bitRateObj = uploadResult.get("bit_rate");
         int  bitrateKbps = 0;
@@ -53,14 +72,13 @@ public class SongService {
         //
         Song song = new Song();
         song.setTitle(request.getTitle());
-        song.setArtist(artistRepository.findById(request.getArtistId()).orElseThrow(()->new AppException(ErrorCode.ARTIST_NOT_FOUND)));
         song.setDescription(request.getDescription());
         song.setDurationSeconds(durationSeconds);
         //
         song.setExplicit(request.isExplicit());
         song.setSku(request.getSku());
         song.setPublished(request.isPublished());
-
+        song.setArtist(artist);
         Song savedSong = songRepository.save(song);
 
         SongFile songFile = SongFile.builder()
@@ -101,5 +119,10 @@ public class SongService {
             songMapper.updateSong(song, request);
             return songMapper.toSongResponse(songRepository.save(song));
 
+        }
+        public SongResponse setPriceSongById(Long id, SetPriceSongRequest request){
+            Song song = songRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.SONG_NOT_FOUND));
+            song.setPriceCents(request.getPrice());
+            return songMapper.toSongResponse(songRepository.save(song));
         }
     }

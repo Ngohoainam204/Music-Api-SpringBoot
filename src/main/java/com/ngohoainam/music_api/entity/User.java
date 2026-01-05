@@ -1,5 +1,6 @@
 package com.ngohoainam.music_api.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ngohoainam.music_api.enums.Roles;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,6 +24,10 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
+    @OneToOne (mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    Artist artist;
 
     @Column(name = "email",nullable = false, unique = true)
     String email;

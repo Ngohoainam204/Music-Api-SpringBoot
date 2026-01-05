@@ -5,6 +5,8 @@ import com.ngohoainam.music_api.dto.response.AuthenticationResponse;
 import com.ngohoainam.music_api.entity.User;
 import com.ngohoainam.music_api.enums.Permissions;
 import com.ngohoainam.music_api.enums.Roles;
+import com.ngohoainam.music_api.exception.AppException;
+import com.ngohoainam.music_api.exception.ErrorCode;
 import com.ngohoainam.music_api.repository.UserRepository;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
@@ -14,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -39,7 +42,7 @@ public class AuthenticationService {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
         var user = userRepository.findUserByEmail(request.getEmail())
-                .orElseThrow(()->new RuntimeException("User not found"));
+                .orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUND));
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPasswordHash());
 
@@ -52,6 +55,11 @@ public class AuthenticationService {
                 .accessToken(token)
                 .authenticated(true)
                 .build();
+    }
+
+    public User getCurrentUser (){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findUserByEmail(email).orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUND));
     }
 
     public String generateToken(User user) throws KeyLengthException {
