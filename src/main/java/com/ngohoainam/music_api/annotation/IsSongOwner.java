@@ -11,3 +11,5 @@ import java.lang.annotation.Target;
 @PreAuthorize("@checkOwnerConfig.isSongOwner(authentication, #id)")
 public @interface IsSongOwner {
 }
+
+

@@ -23,9 +23,11 @@ public enum ErrorCode {
     PLAYLIST_NOT_FOUND("MSC-2002","Playlist not found",HttpStatus.NOT_FOUND),
     ARTIST_NOT_FOUND("MSC-2003","Artist not found",HttpStatus.NOT_FOUND),
     FILE_NOT_FOUND("MSC-2004","File not found",HttpStatus.NOT_FOUND),
+    PURCHASE_REQUIRED("MSC-2005","Purchase required",HttpStatus.FORBIDDEN),
+    COMMENT_NOT_FOUND("MSC-2006","Comment not found",HttpStatus.NOT_FOUND),
     //
     INVALID_REQUEST("MSC-3000","Invalid request",HttpStatus.BAD_REQUEST),
-    ;
+    DEVICE_LIMIT_EXCEEDED("MSC-3001","Device limited" ,HttpStatus.BAD_REQUEST );
     ErrorCode(String code, String message, HttpStatusCode statusCode) {
         this.code = code;
         this.message = message;
@@ -49,3 +51,5 @@ public enum ErrorCode {
         this.statusCode = statusCode;
     }
 }
+
+

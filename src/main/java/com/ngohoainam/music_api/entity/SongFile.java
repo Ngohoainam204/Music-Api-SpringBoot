@@ -1,41 +1,59 @@
 package com.ngohoainam.music_api.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-import org.springframework.data.annotation.LastModifiedDate;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
-@NoArgsConstructor
-@Getter @Setter
-@Entity @Builder
+@Getter
+@Setter
+@Entity
 @Table(name = "song_files")
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class SongFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     private Long id;
 
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "song_id", nullable = false)
+    private Song song;
+
+    @Size(max = 255)
+    @NotNull
     @Column(name = "storage_path", nullable = false)
     private String storagePath;
 
+    @Size(max = 255)
     @Column(name = "storage_provider")
-    private String storageProvider = "s3";
+    private String storageProvider;
 
     @Column(name = "bitrate_kbps")
     private Integer bitrateKbps;
 
-    @Column(name ="format")
+    @Size(max = 255)
+    @Column(name = "format")
     private String format;
 
     @Column(name = "filesize_bytes")
     private Long filesizeBytes;
 
-    @LastModifiedDate
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    @Column(name = "uploaded_at")
+    private Instant uploadedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "song_id")
-    private Song song;
+
 }
+

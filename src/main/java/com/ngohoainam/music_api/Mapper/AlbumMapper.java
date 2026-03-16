@@ -1,4 +1,4 @@
-package com.ngohoainam.music_api.Mapper;
+package com.ngohoainam.music_api.mapper;
 
 import com.ngohoainam.music_api.dto.request.albumRequest.AlbumCreateRequest;
 import com.ngohoainam.music_api.dto.response.AlbumResponse;
@@ -11,11 +11,19 @@ import org.springframework.stereotype.Component;
 @Component
 @Mapper(componentModel = "spring")
 public interface AlbumMapper {
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "artist", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
     Album toAlbum(AlbumCreateRequest request);
+
     @Mapping(source = "id", target = "id")
     @Mapping(target = "artistName", expression = "java(album.getArtist() != null ? album.getArtist().getName() : null)")
-    @Mapping(target = "songTitles",expression = "java(album.getSongs() != null ? album.getSongs().stream().map(song->song.getTitle()).collect(java.util.stream.Collectors.toList()) : null)")
     AlbumResponse toResponse(Album album);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "artist", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
     void updateAlbum(@MappingTarget Album album, AlbumCreateRequest request);
 }
+
+

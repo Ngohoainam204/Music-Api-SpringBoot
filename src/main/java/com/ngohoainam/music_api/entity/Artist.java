@@ -1,44 +1,55 @@
 package com.ngohoainam.music_api.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.CreationTimestamp;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
-import java.time.LocalDateTime;
-import java.util.HashSet;
+import java.time.Instant;
 import java.util.Set;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "artists")
 @Entity
+@Table(name = "artists")
 public class Artist {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
 
-    @Column(nullable = false)
-    String name;
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "name", nullable = false)
+    private String name;
 
-    @Column(nullable = false, unique = true)
-    String url;
-
+    @Size(max = 255)
     @Column(name = "bio")
-    String bio;
+    private String bio;
 
-    @CreationTimestamp
-    @Column(nullable = false,updatable = false)
-    LocalDateTime createdAt;
-    @OneToMany(mappedBy = "artist",cascade = CascadeType.ALL)
-    Set<Song> songs = new HashSet<>();
+    @Size(max = 1024)
+    @Column(name = "profile_image", length = 1024)
+    private String profileImage;
 
-    @OneToMany(mappedBy = "artist",cascade = CascadeType.ALL)
-     Set<Album> albums = new HashSet<>();
+    @ColumnDefault("CURRENT_TIMESTAMP")
+    @Column(name = "created_at")
+    private Instant createdAt;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id",unique = true)
-    User user;
+    @Size(max = 255)
+    @Column(name = "url")
+    private String url;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @OneToMany(mappedBy = "artist")
+    private Set<Album> albums;
+
+    @OneToMany(mappedBy = "artist")
+    private Set<Song> songs;
 }
+
+

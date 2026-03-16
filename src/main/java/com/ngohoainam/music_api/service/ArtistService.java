@@ -1,6 +1,6 @@
 package com.ngohoainam.music_api.service;
 
-import com.ngohoainam.music_api.Mapper.ArtistMapper;
+import com.ngohoainam.music_api.mapper.ArtistMapper;
 import com.ngohoainam.music_api.dto.request.artistRequest.ArtistCreateRequest;
 import com.ngohoainam.music_api.dto.request.artistRequest.ArtistUpdateRequest;
 import com.ngohoainam.music_api.dto.response.ArtistResponse;
@@ -46,3 +46,5 @@ public class ArtistService {
 
     }
 }
+
+

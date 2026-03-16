@@ -1,6 +1,6 @@
 package com.ngohoainam.music_api.controller;
 
-import com.ngohoainam.music_api.Mapper.AlbumMapper;
+import com.ngohoainam.music_api.mapper.AlbumMapper;
 import com.ngohoainam.music_api.dto.request.albumRequest.AlbumCreateRequest;
 import com.ngohoainam.music_api.dto.response.AlbumResponse;
 import com.ngohoainam.music_api.dto.ApiResponse;
@@ -33,3 +33,5 @@ public class AlbumController {
         return ApiResponse.success(albumService.getAlbumById(id));
     }
 }
+
+

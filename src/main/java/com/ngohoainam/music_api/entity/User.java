@@ -1,58 +1,71 @@
 package com.ngohoainam.music_api.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ngohoainam.music_api.enums.Roles;
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.Instant;
 
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
-
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "users")
-@FieldDefaults (level = AccessLevel.PRIVATE)
+@Getter
+@Setter
 @Entity
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    @Column(name = "id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    private Long id;
 
-    @OneToOne (mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonIgnore
-    Artist artist;
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "email", nullable = false)
+    private String email;
 
-    @Column(name = "email",nullable = false, unique = true)
-    String email;
+    @NotNull
+    @Column(name = "email_verified", nullable = false)
+    private Boolean emailVerified = false;
 
-    @Column(name= "email_verified",nullable = false)
-    boolean emailVerified;
-
+    @Size(max = 255)
+    @NotNull
     @Column(name = "password_hash", nullable = false)
-    String passwordHash;
+    private String passwordHash;
 
+    @Size(max = 255)
+    @NotNull
     @Column(name = "display_name", nullable = false)
-    String displayName;
+    private String displayName;
+
 
     @CreationTimestamp
-    @Column(name = "created_at")
-    LocalDateTime createdAt;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at")
-    LocalDateTime updatedAt;
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
 
+    @Size(max = 255)
+    @NotNull
     @Column(name = "status", nullable = false)
-    String status;
+    private String status = "ACTIVE";
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "roles")
-    Roles roles;
+    private Roles roles;
+
+    @Size(max = 512)
+    @Column(name = "refresh_token", length = 512)
+    private String refreshToken;
+
+    @Column(name = "refresh_token_expiry")
+    private Instant refreshTokenExpiry;
 
 }
+
+

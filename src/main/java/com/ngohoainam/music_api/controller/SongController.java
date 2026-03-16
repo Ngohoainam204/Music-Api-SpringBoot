@@ -1,14 +1,16 @@
 package com.ngohoainam.music_api.controller;
 
-import com.ngohoainam.music_api.Mapper.SongMapper;
-import com.ngohoainam.music_api.annotation.IsSongOwner;
+import com.ngohoainam.music_api.mapper.SongMapper;
 import com.ngohoainam.music_api.dto.request.songRequest.SetPriceSongRequest;
 import com.ngohoainam.music_api.dto.request.songRequest.SongCreateRequest;
 import com.ngohoainam.music_api.dto.request.songRequest.SongUpdateRequest;
 import com.ngohoainam.music_api.dto.ApiResponse;
 import com.ngohoainam.music_api.dto.response.SongResponse;
+import com.ngohoainam.music_api.dto.response.StreamUrlResponse;
 import com.ngohoainam.music_api.entity.Song;
+import com.ngohoainam.music_api.service.SongPurchaseService;
 import com.ngohoainam.music_api.service.SongService;
+import com.ngohoainam.music_api.service.SongStreamingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -25,6 +27,8 @@ import java.util.List;
 @RequestMapping("/songs")
 public class SongController {
     private final SongService songService;
+    private final SongPurchaseService songPurchaseService;
+    private final SongStreamingService songStreamingService;
 
     private final SongMapper songMapper;
 
@@ -36,16 +40,20 @@ public class SongController {
     ) throws IOException {
         Song song = songService.createSong(request,file);
         SongResponse songResponse = songMapper.toSongResponse(song);
-        return ApiResponse.success(songResponse);
+        return ApiResponse.created(songResponse);
     }
 
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'ARTIST')")
     @GetMapping
     public ApiResponse<List<SongResponse>> getSongs() {
         return ApiResponse.success(songService.getAllSongs());
     }
 
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'ARTIST')")
+    @PreAuthorize("hasAnyRole('USER', 'ARTIST', 'ADMIN')")
+    @GetMapping("/me")
+    public ApiResponse<List<SongResponse>> getMySongs() {
+        return ApiResponse.success(songService.getMySongs());
+    }
+
     @GetMapping("/{id}")
     public ApiResponse<SongResponse> getSongById(@PathVariable("id") Long id) {
         Song song = songService.getSongById(id);
@@ -72,5 +80,19 @@ public class SongController {
         return ApiResponse.success(songService.setPriceSongById(id,request));
     }
 
+    @PostMapping("/{id}/purchase")
+    @PreAuthorize("hasAnyRole('USER', 'ARTIST', 'ADMIN')")
+    public ApiResponse<String> purchaseSong(@PathVariable("id") Long id) {
+        songPurchaseService.purchaseSong(id);
+        return ApiResponse.success("Purchased successfully");
+    }
+
+    @GetMapping("/{id}/stream-url")
+    @PreAuthorize("hasAnyRole('USER', 'ARTIST', 'ADMIN')")
+    public ApiResponse<StreamUrlResponse> getStreamUrl(@PathVariable("id") Long id) {
+        return ApiResponse.success(songStreamingService.getStreamUrlBySongId(id));
+    }
+
 }
+
 

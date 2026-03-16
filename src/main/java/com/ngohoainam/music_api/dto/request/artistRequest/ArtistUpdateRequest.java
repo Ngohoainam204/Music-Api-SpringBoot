@@ -15,3 +15,5 @@ public class ArtistUpdateRequest {
     String url;
     String bio;
 }
+
+

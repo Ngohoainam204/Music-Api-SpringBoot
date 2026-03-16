@@ -1,38 +1,49 @@
 package com.ngohoainam.music_api.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-import java.time.LocalDateTime;
-import java.util.Set;
+import java.time.Instant;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Table(name = "albums")
 @Entity
+@Table(name = "albums")
 public class Album {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(nullable = false)
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "title", nullable = false)
     private String title;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "artist_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @JoinColumn(name = "artist_id")
     private Artist artist;
 
+    @NotNull
     @Column(name = "release_date", nullable = false)
-    private LocalDateTime releaseDate;
+    private Instant releaseDate;
 
+    @Size(max = 255)
+    @NotNull
     @Column(name = "cover_image", nullable = false)
     private String coverImage;
 
+    @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "created_at")
-    private LocalDateTime createAt;
+    private Instant createdAt;
 
-    @OneToMany(mappedBy = "album",cascade = CascadeType.ALL)
-    private Set<Song> songs = new java.util.HashSet<>();
+
 }
+

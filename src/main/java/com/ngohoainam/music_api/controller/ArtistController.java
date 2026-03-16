@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/{artists}")
+@RequestMapping("/artists")
 @RequiredArgsConstructor
 public class ArtistController {
     private final ArtistService artistService;
@@ -45,3 +45,5 @@ public class ArtistController {
         return ApiResponse.success(ErrorCode.DELETE_SUCCESS.getMessage());
     }
 }
+
+

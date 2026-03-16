@@ -3,10 +3,7 @@ package com.ngohoainam.music_api.controller;
 import com.ngohoainam.music_api.dto.request.userRequest.UserCreateRequest;
 import com.ngohoainam.music_api.dto.ApiResponse;
 import com.ngohoainam.music_api.dto.response.UserResponse;
-import com.ngohoainam.music_api.entity.User;
-import com.ngohoainam.music_api.enums.Roles;
 import com.ngohoainam.music_api.exception.ErrorCode;
-import com.ngohoainam.music_api.repository.UserRepository;
 import com.ngohoainam.music_api.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +17,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    @PostMapping
-    public ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreateRequest request){
-
-        return ApiResponse.created(userService.registerUser(request));
-    }
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ApiResponse<List<UserResponse>> getAllUsers(){
@@ -40,12 +32,13 @@ public class UserController {
         userService.deleteUserById(id);
         return ApiResponse.success(ErrorCode.DELETE_SUCCESS.getMessage());
     }
+
     @PostMapping("{id}/upgrade-to-artist")
     @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<String> upgradeUserToArtist(@PathVariable("id") Long id){
-        userService.updateUserById(id);
+        userService.upgradeUserToArtist(id);
         return ApiResponse.success(ErrorCode.SUCCESS.getMessage());
     }
-
-
 }
+
+

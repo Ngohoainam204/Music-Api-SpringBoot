@@ -1,26 +1,30 @@
 package com.ngohoainam.music_api.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.FieldDefaults;
 
-import java.util.HashSet;
-import java.util.Set;
-
-@Entity
 @Getter
 @Setter
-@FieldDefaults(level = AccessLevel.PRIVATE)
-
+@Entity
+@Table(name = "permissions")
 public class Permission {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
 
-    @Column(nullable = false, unique = true)
-    String name;
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "name", nullable = false)
+    private String name;
 
-    @ManyToMany(mappedBy = "permissions",fetch = FetchType.LAZY)
-    Set<Role> roles = new HashSet<>();
+    @Size(max = 100)
+    @Column(name = "description", length = 100)
+    private String description;
+
+
 }
+

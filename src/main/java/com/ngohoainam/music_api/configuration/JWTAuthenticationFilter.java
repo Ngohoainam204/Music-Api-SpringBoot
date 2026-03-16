@@ -3,6 +3,7 @@ package com.ngohoainam.music_api.configuration;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.crypto.MACVerifier;
+import com.nimbusds.jwt.SignedJWT;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -43,25 +45,42 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         String token = header.substring(7);
 
         try {
-            JWSObject jwsObject = JWSObject.parse(token);
-            boolean verified = jwsObject.verify(new MACVerifier(signerKey.getBytes(StandardCharsets.UTF_8)));
+            SignedJWT signedJWT = SignedJWT.parse(token);
 
+            // Verify the token signature
+            boolean verified = signedJWT.verify(new MACVerifier(signerKey.getBytes(StandardCharsets.UTF_8)));
             if (!verified) {
-                log.warn("Token is not verified");
-                filterChain.doFilter(request, response);
+                log.warn("Token signature is not valid");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Token Signature");
                 return;
             }
 
-            Map<String, Object> payload = jwsObject.getPayload().toJSONObject();
+            // Check if the token is expired
+            Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+            if (expirationTime.before(new Date())) {
+                log.warn("Token is expired");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token Expired");
+                return;
+            }
+
+            // Extract claims
+            Map<String, Object> payload = signedJWT.getJWTClaimsSet().getClaims();
             String email = (String) payload.get("sub");
             List<String> roles = (List<String>) payload.get("roles");
             List<String> permissions = (List<String>) payload.get("permissions");
 
             List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-            if (roles != null)
+            if (roles != null) {
                 roles.forEach(role -> {
-                    authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
+                    String roleName = role == null ? "" : role.trim();
+                    if (roleName.isEmpty()) return;
+                    if (roleName.startsWith("ROLE_")) {
+                        authorities.add(new SimpleGrantedAuthority(roleName));
+                    } else {
+                        authorities.add(new SimpleGrantedAuthority("ROLE_" + roleName));
+                    }
                 });
+            }
             if (permissions != null)
                 permissions.forEach(permission -> authorities.add(new SimpleGrantedAuthority(permission)));
 
@@ -72,10 +91,13 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(auth);
 
         } catch (ParseException | JOSEException e) {
-            throw new RuntimeException(e);
+            log.error("Error parsing or verifying token", e);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Token");
+            return;
         }
-
 
         filterChain.doFilter(request, response);
     }
 }
+
+

@@ -4,7 +4,7 @@ import com.ngohoainam.music_api.entity.Song;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Set;
 
 @Getter @Setter
@@ -13,9 +13,10 @@ import java.util.Set;
 @Builder
 public class AlbumCreateRequest {
     String title;
-    LocalDateTime releaseDate;
+    Instant releaseDate;
     String coverImage;
-    LocalDateTime createAt;
+    Instant createAt;
     Long artistId;
     Set<Song> songIds;
 }
+

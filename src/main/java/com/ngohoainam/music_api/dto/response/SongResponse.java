@@ -4,7 +4,7 @@ package com.ngohoainam.music_api.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 @NoArgsConstructor
@@ -19,7 +19,8 @@ public class SongResponse {
     int priceCents;
     boolean isPublished;
     String sku;
-    LocalDateTime createdAt;
+    Instant createdAt;
     Long albumId;
     Long artistId;
 }
+

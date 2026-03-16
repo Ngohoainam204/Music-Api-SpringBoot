@@ -11,3 +11,5 @@ import java.lang.annotation.Target;
 @PreAuthorize("@checkOwnerConfig.isAlbumOwner(authentication, #id)")
 public @interface isAlbumOwner {
 }
+
+

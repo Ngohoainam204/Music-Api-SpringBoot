@@ -1,6 +1,6 @@
 package com.ngohoainam.music_api.service;
 
-import com.ngohoainam.music_api.Mapper.SongMapper;
+import com.ngohoainam.music_api.mapper.SongMapper;
 import com.ngohoainam.music_api.dto.request.songRequest.SetPriceSongRequest;
 import com.ngohoainam.music_api.dto.request.songRequest.SongCreateRequest;
 import com.ngohoainam.music_api.dto.request.songRequest.SongUpdateRequest;
@@ -21,8 +21,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -40,7 +43,8 @@ public class SongService {
         //Upload
         User user = authenticationService.getCurrentUser();
 
-        Artist artist = user.getArtist();
+        // Need to fetch Artist from repository by User
+        Artist artist = artistRepository.findByUser(user).orElse(null);
         log.info("displayname" + user.getDisplayName());
         if(artist == null) {
                 // Chưa có thì tạo mới ngay lập tức
@@ -48,36 +52,40 @@ public class SongService {
                 artist.setUser(user);
                 artist.setName(user.getDisplayName());
                 artist.setBio("New artist");
-                artist.setUser(user);
                 log.info("displayname" + artist.getName());
                 artist = artistRepository.save(artist);
         }
 
-        Map uploadResult = cloudinaryService.uploadFile(file);
+        Map uploadResult = cloudinaryService.uploadSong(file);
 
         //Info
         String fileUrl = uploadResult.get("secure_url").toString();
         String format = uploadResult.get("format").toString();
         Long size = Long.parseLong(uploadResult.get("bytes").toString());
 
-        //
-        Double durationDouble =(Double) uploadResult.get("duration");
-        int durationSeconds  = durationDouble.intValue();
-        //
+        // Safely handle numeric conversion for duration
+        Object durationObj = uploadResult.get("duration");
+        Long durationSeconds = 0L;
+        if (durationObj instanceof Number) {
+            durationSeconds = ((Number) durationObj).longValue();
+        }
+
+        // Safely handle numeric conversion for bit_rate
         Object bitRateObj = uploadResult.get("bit_rate");
         int  bitrateKbps = 0;
-        if (bitRateObj != null) {
-            bitrateKbps = Integer.parseInt(bitRateObj.toString()) / 1000;
+        if (bitRateObj instanceof Number) {
+            bitrateKbps = ((Number) bitRateObj).intValue() / 1000;
         }
-        //
+
+        //e
         Song song = new Song();
         song.setTitle(request.getTitle());
         song.setDescription(request.getDescription());
         song.setDurationSeconds(durationSeconds);
         //
-        song.setExplicit(request.isExplicit());
+
         song.setSku(request.getSku());
-        song.setPublished(request.isPublished());
+        song.setIsPublished(request.isPublished());
         song.setArtist(artist);
         Song savedSong = songRepository.save(song);
 
@@ -97,6 +105,22 @@ public class SongService {
     public List<SongResponse> getAllSongs(){
         return songRepository.findAll().stream().map(songMapper::toSongResponse).toList();
     }
+
+    public List<SongResponse> getMySongs() {
+        User currentUser = authenticationService.getCurrentUser();
+        Artist artist = artistRepository.findByUser(currentUser).orElse(null);
+
+        if (artist == null) {
+            // If the user is not an artist, they have no songs.
+            return Collections.emptyList();
+        }
+
+        return songRepository.findByArtist(artist)
+                .stream()
+                .map(songMapper::toSongResponse)
+                .collect(Collectors.toList());
+    }
+
     public Song getSongById(Long id){
         return songRepository.findById(id).orElseThrow(()-> new AppException(ErrorCode.SONG_NOT_FOUND));
     }
@@ -109,8 +133,14 @@ public class SongService {
 
         User currentUser = userRepository.findUserByEmail(email).orElseThrow(()->new AppException(ErrorCode.ARTIST_NOT_FOUND));
 
-        boolean isOwner = song.getArtist().getId().equals(currentUser.getId());
-        boolean isAdmin = currentUser.getRoles().name().equals("ADMIN");
+        boolean isOwner = song.getArtist().getUser().getId().equals(currentUser.getId());
+        
+        String roleName = "USER";
+        if (currentUser.getRoles() != null) {
+            roleName = currentUser.getRoles().name();
+        }
+        
+        boolean isAdmin = roleName.equals("ADMIN");
         if(!isAdmin && !isOwner) throw new AppException(ErrorCode.FORBIDDEN);
         songRepository.deleteById(id);
     }
@@ -120,9 +150,13 @@ public class SongService {
             return songMapper.toSongResponse(songRepository.save(song));
 
         }
-        public SongResponse setPriceSongById(Long id, SetPriceSongRequest request){
-            Song song = songRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.SONG_NOT_FOUND));
+    public SongResponse setPriceSongById(Long id, SetPriceSongRequest request){
+        Song song = songRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.SONG_NOT_FOUND));
+        if (request.getPrice() != null) {
             song.setPriceCents(request.getPrice());
-            return songMapper.toSongResponse(songRepository.save(song));
         }
+        return songMapper.toSongResponse(songRepository.save(song));
     }
+}
+
+

@@ -14,13 +14,24 @@ import java.util.Map;
 public class CloudinaryService {
     private final CloudinaryConfig cloudinaryConfig;
 
-    public Map uploadFile(MultipartFile file) throws IOException {
-        if (file.isEmpty()) return null;
+    public Map uploadSong(MultipartFile file) throws IOException {
+        return upload(file, "Songs");
+    }
 
+    public Map uploadImage(MultipartFile file) throws IOException {
+        return upload(file, "Images");
+    }
+
+    private Map upload(MultipartFile file, String folder) throws IOException {
+        if (file == null || file.isEmpty()) {
+            return null;
+        }
         Map params = ObjectUtils.asMap(
                 "resource_type", "auto",
-                "folder", "SongList"
+                "folder", folder
         );
         return cloudinaryConfig.cloudinary().uploader().upload(file.getBytes(), params);
     }
 }
+
+

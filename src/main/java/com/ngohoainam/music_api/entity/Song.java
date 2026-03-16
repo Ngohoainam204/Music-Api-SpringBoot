@@ -1,70 +1,70 @@
 package com.ngohoainam.music_api.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.LastModifiedDate;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.Instant;
 
-@Getter @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Table(name = "songs",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"title","album_id", "artist_id"})
-
-)
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@Getter
+@Setter
 @Entity
+@Table(name = "songs")
 public class Song {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
 
+    @Size(max = 255)
+    @NotNull
     @Column(name = "title", nullable = false)
-    String title;
+    private String title;
 
-    @ManyToOne
-    @JoinColumn(name = "artist_id", nullable = false)
-    Artist artist;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @JoinColumn(name = "artist_id")
+    private Artist artist;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "album_id")
-    Album album;
+    private Album album;
 
-    @Column(name = "duration_seconds")
-    int durationSeconds;
+    @Column(name = "duration_seconds", columnDefinition = "int UNSIGNED")
+    private Long durationSeconds;
 
+    @Size(max = 255)
     @Column(name = "description")
-    String description;
+    private String description;
 
-    @Column(name = "explicit")
-    boolean explicit = false;
 
-    @Column(name = "is_published", nullable = false)
-    boolean isPublished ;
 
-    @Column(name = "price_cents")
-    BigDecimal priceCents ;
+    @ColumnDefault("1")
+    @Column(name = "is_published")
+    private Boolean isPublished;
 
+    @ColumnDefault("0")
+    @Column(name = "price_cents", precision = 10)
+    private BigDecimal priceCents;
+
+    @Size(max = 255)
     @Column(name = "sku")
-    String sku;
+    private String sku;
 
-
-
-    @CreationTimestamp
+    @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "created_at")
-    LocalDateTime createdAt;
+    private Instant createdAt;
 
-    @LastModifiedDate
+    @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "updated_at")
-    LocalDateTime updatedAt;
+    private Instant updatedAt;
 
-    @OneToMany(mappedBy = "song",cascade = CascadeType.ALL)
-    private List<SongFile> songFiles;
+
 }
+

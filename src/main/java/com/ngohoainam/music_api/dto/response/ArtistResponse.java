@@ -1,17 +1,14 @@
 package com.ngohoainam.music_api.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.ngohoainam.music_api.entity.Album;
-import com.ngohoainam.music_api.entity.Song;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -24,7 +21,7 @@ public class ArtistResponse {
     String url;
     String bio;
     String profileImage;
-    LocalDateTime createdAt;
+    Instant createdAt;
     //
     List<String> songTitles;
     List<String> albumTitles;
@@ -32,3 +29,5 @@ public class ArtistResponse {
     List<AlbumResponse> albums;
     List<SongResponse> songs;
 }
+
+
